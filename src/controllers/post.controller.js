@@ -29,9 +29,9 @@ export const createPost = async (req, res) => {
         return res
             .status(201)
             .json(new ApiResponse(201, newPost, "Post created successfully"));
-    }
-    const newPost = postService.createPost({ title, content });
-    res.status(201).json(newPost);
+    } catch (error) {
+        return res.status(400).json({ message: 'Title and content are required.' });
+    };
 };
 
 export const updatePost = (req, res) => {
