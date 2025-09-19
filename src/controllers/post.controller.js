@@ -1,14 +1,19 @@
-    // src/controllers/post.controller.js
-    import * as postService from '../services/post.service.js';
+// src/controllers/post.controller.js
+import * as postService from '../services/post.service.js';
 
-    export const getAllPosts = async (req, res) => {
-        try {
-            const posts = await postService.getAllPosts();
-            res.json(posts);
-        } catch (error) {
-            res.status(500).json({ message: 'Error retrieving posts', error: error.message });
-        }
-    };
+// ... (keep getAllPosts, getPostById, createPost, updatePost)
 
-    // (Apply the same async/await and try/catch pattern to all other controller functions:
-    // getPostById, createPost, updatePost, partiallyUpdatePost, and deletePost)
+// *** NEW CONTROLLER FUNCTION FOR PATCH ***
+export const partiallyUpdatePost = (req, res) => {
+    const postId = parseInt(req.params.id, 10);
+    // req.body will contain the fields to update, e.g., { title: "New Title" }
+    const post = postService.partiallyUpdatePost(postId, req.body);
+    if (!post) {
+        return res.status(404).json({ message: 'Post not found.' });
+    }
+    res.json(post);
+};
+
+export const deletePost = (req, res) => {
+    // ... (keep this function as is)
+};
