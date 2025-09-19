@@ -1,9 +1,6 @@
 // src/controllers/post.controller.js
 import * as postService from '../services/post.service.js';
 
-// src/controllers/post.controller.js
-import * as postService from '../services/post.service.js';
-
 export const getAllPosts = (req, res) => {
     const posts = postService.getAllPosts();
     res.json(posts);
