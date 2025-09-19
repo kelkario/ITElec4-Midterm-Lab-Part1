@@ -22,10 +22,13 @@ export const getPostById = (req, res) => {
     res.json(post);
 };
 
-export const createPost = (req, res) => {
-    const { title, content } = req.body;
-    if (!title || !content) {
-        return res.status(400).json({ message: 'Title and content are required.' });
+export const createPost = async (req, res) => {
+    try {
+        // The data is guaranteed to be valid here
+        const newPost = await postService.createPost(req.body);
+        return res
+            .status(201)
+            .json(new ApiResponse(201, newPost, "Post created successfully"));
     }
     const newPost = postService.createPost({ title, content });
     res.status(201).json(newPost);
