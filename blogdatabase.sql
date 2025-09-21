@@ -1,7 +1,15 @@
 create database blogdatabase;
-use blogdatabase;
-create table posts (
-	id INT AUTO_INCREMENT PRIMARY KEY,
-    title varchar(255) NOT NULL,
-    content TEXT NOT NULL
+USE blogdatabase;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE posts
+ADD COLUMN authorId INT NOT NULL,
+ADD CONSTRAINT fk_author
+FOREIGN KEY (authorId) REFERENCES users(id)
+ON DELETE CASCADE;
