@@ -12,19 +12,16 @@ export const getCommentsByPostId = (req, res) => {
     res.json(comments);
 };
 
-export const createCommentForPost = (req, res) => {
-    const postId = parseInt(req.params.postId, 10);
-    const { text } = req.body;
+export const createCommentForPost = asyncHandler(async (req, res) => {
+    const { postId } = req.params;
+    const { content, authorId } = req.body;
 
-    if (!text) {
-        return res.status(400).json({ message: 'Comment text is required.' });
-    }
+    const newComment = await commentService.createCommentForPost(postId, {
+        content,
+        authorId,
+    });
 
-    const newComment = commentService.createComment(postId, { text });
-
-    if (!newComment) {
-        return res.status(404).json({ message: 'Post not found.' });
-    }
-
-    res.status(201).json(newComment);
-};
+    return res
+        .status(201)
+        .json(new ApiResponse(201, newComment, "Comment created successfully"));
+});

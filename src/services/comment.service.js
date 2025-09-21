@@ -29,3 +29,22 @@ export const createComment = (postId, commentData) => {
     comments.push(newComment);
     return newComment;
 };
+
+export const createCommentForPost = async (postId, { content, authorId }) => {
+    try {
+        const [result] = await db.query(
+            "INSERT INTO comments (content, postId, authorId) VALUES (?, ?, ?)",
+            [content, postId, authorId]
+        );
+
+        const [rows] = await db.query("SELECT * FROM comments WHERE id = ?", [
+            result.insertId,
+        ]);
+        return rows[0];
+    } catch (error) {
+        if (error.code === "ER_NO_REFERENCED_ROW_2") {
+            throw new ApiError(400, "Invalid authorId. User does not exist.");
+        }
+        throw error;
+    }
+};

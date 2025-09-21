@@ -3,16 +3,41 @@ import pool from '../config/db.js';
 import { ApiError } from '../utils/ApiError.js';
 
 export const getAllPosts = async () => {
-    const [posts] = await pool.query('SELECT * FROM posts');
-    return posts;
+    const [rows] = await db.query(`
+        SELECT 
+            p.id, 
+            p.title, 
+            p.content, 
+            u.username AS authorUsername, 
+            u.email AS authorEmail
+        FROM posts p
+        JOIN users u ON p.authorId = u.id
+    `);
+    return rows;
 };
+
 export const getPostById = async (id) => {
-    const [rows] = await pool.query('SELECT * FROM posts WHERE id = ?', [id]);
-    if (!rows[0]) {
-        throw new ApiError(404, "Post not found"); // Throws a specific error
+    const [rows] = await db.query(
+        `
+        SELECT 
+            p.id, 
+            p.title, 
+            p.content, 
+            u.username AS authorUsername, 
+            u.email AS authorEmail
+        FROM posts p
+        JOIN users u ON p.authorId = u.id
+        WHERE p.id = ?
+        `,
+        [id]
+    );
+
+    if (rows.length === 0) {
+        throw new ApiError(404, "Post not found");
     }
     return rows[0];
 };
+
 
 export const createPost = async (postData) => {
     const { title, content } = postData;
@@ -59,3 +84,16 @@ export const createPost = async (postData) => {
         const [result] = await pool.query('DELETE FROM posts WHERE id = ?', [id]);
         return result.affectedRows > 0;
     };
+
+try {
+  const [result] = await db.query(
+    'INSERT INTO posts (title, content, authorId) VALUES (?, ?, ?)',
+    [postData.title, postData.content, postData.authorId]
+  );
+  return await getPostById(result.insertId);
+} catch (err) {
+  if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+    throw new ApiError(400, 'Invalid author ID. User does not exist.');
+  }
+  throw err;
+}
