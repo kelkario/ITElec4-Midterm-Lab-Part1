@@ -1,4 +1,4 @@
-# ITElec4-Lab-4-Migrating-Database
+# ITElec4-Midterm-Lab-Part1
 Lab for mysql link 
 
 
